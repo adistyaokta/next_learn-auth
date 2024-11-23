@@ -13,18 +13,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AccountType {
+  email
+  google
+  github
+}
+
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String
+  id String @default(uuid()) @unique
   username String
+  email String @unique
   password String
-  sessions Session[]
+  emailVerified Boolean @default(false)
+  role Role @default(USER)
+  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Account Account[]
+  Session Session[]
+
+  @@map("user")
 }
 
 model Session {
-  id        String   @id
-  userId    Int
+  id String @id 
   expiresAt DateTime
+  // ipAddress String?
+  // userAgent String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+  @@map("session")
 }
+
+model Account {
+  id String @id @default(uuid())
+  // accountId String TODO: ADD ON OAUTH
+  // providerId String TODO: ADD ON OAUTH
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // TODO: IMPLEMENT ON OAUTH
+  // accessToken String?
+  // refreshToken String?
+  // idToken String?
+  // expiresAt DateTime?
+
+  @@map("account")
+}
+
+model Verification {
+  id String @id
+  identifier String
+  value String
+  expiresAt DateTime
+  createdat DateTime @default(now())
+
+  @@map("verificatioin")
+}
+
+// model User {
+//   id       Int       @id @default(autoincrement())
+//   email    String
+//   username String
+//   password String
+//   sessions Session[]
+// }
+
+// model Session {
+//   id        String   @id
+//   userId    Int
+//   expiresAt DateTime
+
+//   user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+// }

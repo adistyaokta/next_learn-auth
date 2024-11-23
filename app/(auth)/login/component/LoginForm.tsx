@@ -1,8 +1,7 @@
 'use client';
 
-import { useFormState } from 'react-dom';
-import { loginAction } from '../action';
 import { useActionState } from 'react';
+import { loginAction } from '../action';
 
 const initialState = {
   message: '',

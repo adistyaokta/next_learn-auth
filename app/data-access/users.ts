@@ -1,13 +1,22 @@
 'use server';
 import prisma from '@/lib/prisma';
 import { User } from '@prisma/client';
+import { HashPassword } from './utils';
+import crypto from 'crypto';
 
-export async function createUser(data: any) {
+export async function createUser(data: Partial<User>) {
   const { email, password, username } = data;
+
+  if (!email || !password || !username) {
+    throw new Error('Email, password, and username are required');
+  }
+
+  const hash = await HashPassword(password);
+
   const user = await prisma.user.create({
     data: {
       email,
-      password,
+      password: hash,
       username,
     },
   });
@@ -15,7 +24,7 @@ export async function createUser(data: any) {
   return user;
 }
 
-export async function getUserById(id: number) {
+export async function getUserById(id: string) {
   const user = await prisma.user.findUnique({
     where: {
       id,
@@ -35,7 +44,7 @@ export async function getUserFromEmail(email: string) {
   return user;
 }
 
-export async function deleteUser(id: number) {
+export async function deleteUser(id: string) {
   await prisma.user.delete({
     where: {
       id,
@@ -43,7 +52,7 @@ export async function deleteUser(id: number) {
   });
 }
 
-export async function updateUser(id: number, data: Partial<User>) {
+export async function updateUser(id: string, data: Partial<User>) {
   const updatedUser = await prisma.user.update({
     where: {
       id,
@@ -54,25 +63,7 @@ export async function updateUser(id: number, data: Partial<User>) {
   return updatedUser;
 }
 
-export async function verifyPassword(email: string, plainPassword: string) {
-  const user = await getUserFromEmail(email);
-
-  if (!user) return false;
-
-  // const account = await getAccountById(user.id);
-
-  // if (!account) return false;
-
-  // const salt = account.salt;
-  // const savedPassword = account.password;
-
-  // if (!salt || !savedPassword) return false;
-
-  // const hash = await hashPassword(plainPassword, salt);
-  // return account.password === hash;
-}
-
-export async function getUserPassword(userId: number) {
+export async function getUserPassword(userId: string) {
   const user = await prisma.user.findFirst({
     where: {
       id: userId,
@@ -84,4 +75,15 @@ export async function getUserPassword(userId: number) {
   }
 
   return user.password;
+}
+
+export async function verifyAdmin(id: string): Promise<boolean> {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (user?.role !== 'ADMIN') return false;
+  return true;
 }

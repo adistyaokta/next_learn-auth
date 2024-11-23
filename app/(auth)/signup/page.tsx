@@ -1,8 +1,14 @@
 import Link from 'next/link';
 import React from 'react';
 import { SignUpForm } from './component/SignUpForm';
+import { getCurrentSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
 
-export default function page() {
+export default async function page() {
+  const { session } = await getCurrentSession();
+  if (session !== null) {
+    return redirect('/dashboard');
+  }
   return (
     <>
       <h1>Create an account</h1>

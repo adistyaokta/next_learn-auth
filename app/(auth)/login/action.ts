@@ -1,10 +1,7 @@
 'use server';
 
-import {
-  getUserFromEmail,
-  getUserPassword,
-  verifyPassword,
-} from '@/app/data-access/users';
+import { getUserFromEmail, getUserPassword } from '@/app/data-access/users';
+import { verifyPassword } from '@/app/data-access/utils';
 import { createSession, generateSessionToken } from '@/auth';
 import { setSessionTokenCookie } from '@/lib/session';
 import { redirect } from 'next/navigation';
