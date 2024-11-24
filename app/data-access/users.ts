@@ -3,6 +3,9 @@ import prisma from '@/lib/prisma';
 import { User } from '@prisma/client';
 import { HashPassword } from './utils';
 import crypto from 'crypto';
+import { getCurrentUser } from '@/lib/session';
+import { redirect } from 'next/navigation';
+import { PERMISSION_DENIED } from '@/lib/constant/constant';
 
 export async function createUser(data: Partial<User>) {
   const { email, password, username } = data;
@@ -77,13 +80,19 @@ export async function getUserPassword(userId: string) {
   return user.password;
 }
 
-export async function verifyAdmin(id: string): Promise<boolean> {
+export async function verifyAdmin() {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) redirect('/login');
+
   const user = await prisma.user.findUnique({
     where: {
-      id,
+      id: currentUser?.id,
     },
   });
 
-  if (user?.role !== 'ADMIN') return false;
+  if (user?.role !== 'ADMIN') {
+    redirect(PERMISSION_DENIED);
+  }
   return true;
 }

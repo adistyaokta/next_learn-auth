@@ -1,11 +1,13 @@
 'use server';
 
+import { verifyAdmin } from '@/app/data-access/users';
 import {
   SessionValidationResult,
   validateRequest,
   validateSessionToken,
 } from '@/auth';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { cache } from 'react';
 
 const SESSION_COOKIE_NAME = 'session';
@@ -55,3 +57,17 @@ export const getCurrentSession = cache(
     return result;
   }
 );
+
+export async function authGuard(
+  redirectUrl?: string
+): Promise<SessionValidationResult> {
+  const { session, user } = await getCurrentSession();
+
+  if (!user && redirectUrl) {
+    return redirect(redirectUrl);
+  } else if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  return { session, user };
+}

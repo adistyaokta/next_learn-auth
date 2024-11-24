@@ -10,7 +10,7 @@ export default async function page() {
     return redirect('/dashboard');
   }
   return (
-    <>
+    <div className='flex flex-col justify-center items-center'>
       <h1>Create an account</h1>
       <p>
         Your username must be at least 3 characters long and your password must
@@ -18,6 +18,6 @@ export default async function page() {
       </p>
       <SignUpForm />
       <Link href='/login'>Sign in</Link>
-    </>
+    </div>
   );
 }

@@ -11,11 +11,11 @@ export default async function page() {
   }
 
   return (
-    <>
+    <div className='w-full h-full flex flex-col justify-center items-center gap-3'>
       <h1>Sign in</h1>
       <LoginForm />
       <Link href='/signup'>Create an account</Link>
       <Link href='/forgot-password'>Forgot password?</Link>
-    </>
+    </div>
   );
 }

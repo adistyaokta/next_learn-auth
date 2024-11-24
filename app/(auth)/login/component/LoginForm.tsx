@@ -11,7 +11,7 @@ export function LoginForm() {
   const [state, action] = useActionState(loginAction, initialState);
 
   return (
-    <form action={action}>
+    <form action={action} className='flex flex-col items-center'>
       <label htmlFor='form-login.email'>Email</label>
       <input
         type='email'
@@ -30,7 +30,9 @@ export function LoginForm() {
         required
       />
       <br />
-      <button>Continue</button>
+      <button className='p-2 bg-[var(--foreground)] rounded-md text-[var(--background)] font-bold uppercase'>
+        Continue
+      </button>
       <p>{state.message}</p>
     </form>
   );
